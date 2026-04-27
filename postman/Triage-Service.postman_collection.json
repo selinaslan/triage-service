@@ -1,0 +1,368 @@
+{
+  "info": {
+    "name": "AI-Powered Support Triage Engine",
+    "description": "Postman collection for testing the Triage Service API endpoints. This collection includes all endpoints for analyzing support tickets, semantic search, and ticket retrieval.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health & Status",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/actuator/health",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "actuator",
+                "health"
+              ]
+            },
+            "description": "Check the health status of the application"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Triage Endpoints",
+      "item": [
+        {
+          "name": "Analyze Ticket",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "I've been trying to reset my password for over an hour now and nothing is working! This is really frustrating. I keep getting error messages that don't make sense. Please help me fix this issue as soon as possible!"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/triage/analyze",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "analyze"
+              ]
+            },
+            "description": "Analyzes a customer support ticket to extract sentiment, priority level, and generate a summary.\n\n**Request Body:** Plain text string containing the customer message\n\n**Response:** AnalysisResult object containing:\n- sentiment: (ANGRY, NEUTRAL, HAPPY, FRUSTRATED)\n- priority: (URGENT, MEDIUM, LOW)\n- summary: AI-generated summary of the ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Ticket - Positive",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "Thank you so much for your excellent customer service! Your team was incredibly helpful and resolved my issue immediately. I'm very happy with your product and will definitely recommend it to my colleagues!"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/triage/analyze",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "analyze"
+              ]
+            },
+            "description": "Analyzes a positive customer ticket"
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Ticket - With PII",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "My credit card payment failed. My card number is 4532-1234-5678-9012 and the CVV is 123. My billing name is John Doe. Can you help me process this payment again?"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/triage/analyze",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "analyze"
+              ]
+            },
+            "description": "Analyzes a ticket with sensitive PII (will be redacted by the Python preprocessor)"
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Ticket - HTML Content",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "<html><body><p>I'm having trouble with my account login. <b>Help needed!</b></p><p>My username is: user123@example.com</p></body></html>"
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/triage/analyze",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "analyze"
+              ]
+            },
+            "description": "Analyzes a ticket with HTML formatting (will be cleaned by the Python preprocessor)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Search Endpoints",
+      "item": [
+        {
+          "name": "Semantic Search - Raw",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/triage/search?query=password reset issue",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "password reset issue"
+                }
+              ]
+            },
+            "description": "Performs a semantic search using vector embeddings.\n\n**Query Parameter:** query - The search query string\n\n**Response:** List of text strings (top 3 semantically similar ticket texts from the vector store)"
+          },
+          "response": []
+        },
+        {
+          "name": "Semantic Search - Login Problems",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/triage/search?query=login authentication failed",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "login authentication failed"
+                }
+              ]
+            },
+            "description": "Search for tickets related to login/authentication issues"
+          },
+          "response": []
+        },
+        {
+          "name": "Semantic Search - Payment Issues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/triage/search?query=payment processing error",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "search"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "payment processing error"
+                }
+              ]
+            },
+            "description": "Search for tickets related to payment issues"
+          },
+          "response": []
+        },
+        {
+          "name": "Hybrid Ticket Retrieval",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/triage/tickets?query=account issue",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "account issue"
+                }
+              ]
+            },
+            "description": "Performs semantic search and returns full SupportTicket entities with all details.\n\n**Query Parameter:** query - The search query string\n\n**Response:** List of SupportTicket objects containing:\n- id: Ticket ID\n- originalMessage: Original customer message\n- sentiment: Extracted sentiment (ANGRY, NEUTRAL, HAPPY, FRUSTRATED)\n- priority: Extracted priority (URGENT, MEDIUM, LOW)\n- summary: AI-generated summary\n- createdAt: Timestamp of ticket creation"
+          },
+          "response": []
+        },
+        {
+          "name": "Hybrid Ticket Retrieval - Urgent Issues",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/triage/tickets?query=urgent help needed",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "triage",
+                "tickets"
+              ],
+              "query": [
+                {
+                  "key": "query",
+                  "value": "urgent help needed"
+                }
+              ]
+            },
+            "description": "Retrieve full ticket entities for urgent-related issues"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "API Documentation",
+      "item": [
+        {
+          "name": "Swagger UI",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/swagger-ui.html",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "swagger-ui.html"
+              ]
+            },
+            "description": "Interactive API documentation - Open in browser"
+          },
+          "response": []
+        },
+        {
+          "name": "OpenAPI JSON Spec",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/v3/api-docs",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "v3",
+                "api-docs"
+              ]
+            },
+            "description": "OpenAPI specification in JSON format"
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "api_path",
+      "value": "/api/triage",
+      "type": "string"
+    }
+  ]
+}
+

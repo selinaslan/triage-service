@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: triage-service
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always # Ensure data.sql is always executed
+      continue-on-error: true
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: always
+
+langchain4j:
+  ollama:
+    chat-model:
+      base-url: http://localhost:11434
+      model-name: llama3
+    embedding-model:
+      base-url: http://localhost:11434
+      model-name: mxbai-embed-large
+
+
+# This helps you see what the AI is sending back and forth in your logs
+logging:
+  level:
+    dev.langchain4j: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    org.springframework.orm.jpa: DEBUG
+    org.springframework.jdbc.datasource.init: DEBUG
+    org.hibernate.tool.schema: DEBUG
